@@ -1,0 +1,58 @@
+# config_gen4 script uses pandas to create a datafrom of devics and config items to replace and create config files. This can be utilized for any form of teplate not just cisco/network
+# once the script is in place, there should not be anything changed in it
+# This scrit requires 2 files and one dir in order for it to work
+file1 = config_base
+	this will be a base config file. this will include all variables in format "<config_variable>", the variable must be surrounded by "< >".>string inside <> must match the column in the "config_data" file. there can not be duplicate fields
+	#####################################################################################
+		example "./config_base"
+			!
+			hostname <hostname>
+			!
+			config t
+			!
+			interface <loopback_int>
+			 ip address <loopback_ip> <loopback_mask>
+			 no shut
+			!
+			interface <wan1_int>
+			 ip address <wan1_ip> <wan1_mask>
+			 no shut
+			!
+	#####################################################################################
+
+
+file2 = config_data
+	this will be the database file from which data will be fed into the config files. The only required field is 'host' as it is used by pandas to set up the index and columns. The actual index for "host" can be any string. keep in mind this files must be in csv format. The column names also must match the "<config_variable>" in the "config_base" file. you can add/remove fields as need and the scripts will pick up the fields w/o any changes to the script.
+	#####################################################################################
+		example "./config_data"
+			host,hostname,loopback_int,loopback_ip,loopback_mask,wan1_int,wan1_ip,wan1_mask
+			R1,Nov_R1,loopback 0,1.1.1.1,255.255.255.255,Gig0/0,192.168.1.0,255.255.255.255
+			R2,Nov_R2,loopback 0,1.1.1.2,255.255.255.255,Gig0/0,192.168.1.2,255.255.255.255
+			R3,Nov_R3,loopback 0,1.1.1.3,255.255.255.255,Gig0/0,192.168.1.4,255.255.255.255
+			R4,Nov_R4,loopback 0,1.1.1.4,255.255.255.255,Gig0/0,192.168.1.6,255.255.255.255
+			R5,Nov_R5,loopback 0,1.1.1.5,255.255.255.255,Gig0/0,192.168.1.8,255.255.255.255
+			R6,Nov_R6,loopback 0,1.1.1.6,255.255.255.255,Gig0/0,192.168.1.10,255.255.255.255
+			R7,Nov_R7,loopback 0,1.1.1.7,255.255.255.255,Gig0/0,192.168.1.12,255.255.255.255
+			R8,Nov_R8,loopback 0,1.1.1.8,255.255.255.255,Gig0/0,192.168.1.14,255.255.255.255
+			R9,Nov_R9,loopback 0,1.1.1.9,255.255.255.255,Gig0/0,192.168.1.16,255.255.255.255
+			R10,Nov_R10,loopback 0,1.1.1.10,255.255.255.255,Gig0/0,192.168.1.18,255.255.255.255
+			R11,Nov_R11,loopback 0,1.1.1.11,255.255.255.255,Gig0/0,192.168.1.20,255.255.255.255
+			R12,Nov_R12,loopback 0,1.1.1.12,255.255.255.255,Gig0/0,192.168.1.22,255.255.255.255
+			R13,Nov_R13,loopback 0,1.1.1.13,255.255.255.255,Gig0/0,192.168.1.24,255.255.255.255
+			R14,Nov_R14,loopback 0,1.1.1.14,255.255.255.255,Gig0/0,192.168.1.26,255.255.255.255
+			R15,Nov_R15,loopback 0,1.1.1.15,255.255.255.255,Gig0/0,192.168.1.28,255.255.255.255
+			R16,Nov_R16,loopback 0,1.1.1.16,255.255.255.255,Gig0/0,192.168.1.30,255.255.255.255
+			R17,Nov_R17,loopback 0,1.1.1.17,255.255.255.255,Gig0/0,192.168.1.32,255.255.255.255
+			R18,Nov_R18,loopback 0,1.1.1.18,255.255.255.255,Gig0/0,192.168.1.34,255.255.255.255
+			R19,Nov_R19,loopback 0,1.1.1.19,255.255.255.255,Gig0/0,192.168.1.36,255.255.255.255
+			R20,Nov_R20,loopback 0,1.1.1.20,255.255.255.255,Gig0/0,192.168.1.38,255.255.255.255
+			R21,Nov_R21,loopback 0,1.1.1.21,255.255.255.255,Gig0/0,192.168.1.40,255.255.255.255
+			R22,Nov_R22,loopback 0,1.1.1.22,255.255.255.255,Gig0/0,192.168.1.42,255.255.255.255
+			R23,Nov_R23,loopback 0,1.1.1.23,255.255.255.255,Gig0/0,192.168.1.44,255.255.255.255
+			R24,Nov_R24,loopback 0,1.1.1.24,255.255.255.255,Gig0/0,192.168.1.46,255.255.255.255
+	#####################################################################################
+
+file3 = not a file but a dir called "./config_out/"
+	this is where the ouput config files will be created. 
+
+create the files "config.data" "config.base" and create the dir "./config_ouput/" ans you are ready to go

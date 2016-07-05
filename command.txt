@@ -1,0 +1,11 @@
+show ip route
+show ip int brief
+show proc cpu
+show ver
+show interface
+config t
+banner motd ^C#### hello please enter username and password bellow #####^C
+end
+copy run start
+
+!

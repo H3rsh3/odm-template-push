@@ -1,0 +1,20 @@
+!
+show run
+!
+config t
+!
+hostname <device_hostname>
+!
+no interface loopback 2
+interface <loopback1_int>
+ ip add <loopback1_ip> <loopback1_mask>
+!
+interface <loopback2_int>
+ ip add <loopback2_ip> <loopback2_mask>
+!
+end
+!
+copy run start
+
+
+!

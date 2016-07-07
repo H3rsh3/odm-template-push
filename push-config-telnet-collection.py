@@ -73,7 +73,7 @@ def priv_config(session1,targetcommandfile_list):
 def pexpect_authenticate_enable(gusername, gpassword, session1, targethosthost):
 	pexpect_authenticate_result = pexpect_authenticate(gusername, gpassword, session1 , targethosthost)
 	if pexpect_authenticate_result == "enable_mode":
-		return "in_enable"
+		return "priv_mode_access"
 	elif pexpect_authenticate_result == "enable_run_authen":
 		session1.sendline("enable")
 		priv_pass_results = session1.expect(["error", "Password: "])

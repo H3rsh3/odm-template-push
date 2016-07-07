@@ -50,7 +50,7 @@ def priv_config(session1,targetcommandfile_list):
 		print "{0}".format(command)
 		session1.sendline("%s" % command)
 		#session1.wait()
-		session1.expect("#")
+		session1.expect("#", timeout=120)
 		#config_results  = session1.expect (["#" , "]?"])
 		#if config_results == 0:
 		#	session1.sendline("%s" % command)
@@ -74,15 +74,20 @@ def pexpect_authenticate_enable(gusername, gpassword, session1, targethosthost):
 		return "in_enable"
 	elif pexpect_authenticate_result == "enable_run_authen":
 		session1.sendline("enable")
-		session1.expect("Password: ")
-		session1.sendline("%s" % gpassword)
-		priv_authen_results  = session1.expect (["#" , "Access denied"])
-		if priv_authen_results == 0:
-			return "priv_mode_access"
-		elif priv_authen_results == 1:
-			return "priv_mode_denied"
-		else:
-			return "priv_mode_error"
+		priv_pass_results = session1.expect(["error", "Password: "])
+		if priv_pass_results == 0:
+			print "!@#!@#!@#enable password missing!@#!@#!@#"
+		elif priv_pass_results == 1: 
+			session1.sendline("{0}".format(gpassword))
+		#session1.expect("Password: ")
+		#session1.sendline("%s" % gpassword)
+			priv_authen_results  = session1.expect (["#" , "Access denied"])
+			if priv_authen_results == 0:
+				return "priv_mode_access"
+			elif priv_authen_results == 1:
+				return "priv_mode_denied"
+			else:
+				return "priv_mode_error"
 	elif pexpect_authenticate_result == "enable_authen_err":
 		print "authen"
 #
@@ -117,7 +122,7 @@ def pexpect_authenticate(gusername, gpassword, session1, targethosthost):
 #
 def pextect_spawn(session1, targethosthost):
 	#session1 = pexpect.spawn('telnet %s' % host)
-	session1.logfile = sys.stdout
+	#session1.logfile = sys.stdout
 	spawn_results  = session1.expect (["Unable to connect", "Username: ", "Password: ", pexpect.EOF, pexpect.TIMEOUT])
 	if spawn_results == 0:
 		print "host down can not connect to host %s" % targethosthost

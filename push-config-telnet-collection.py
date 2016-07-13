@@ -129,7 +129,7 @@ def pexpect_authenticate(gusername, gpassword, session1, targethosthost):
 def pextect_spawn(session1, targethosthost):
 	#session1 = pexpect.spawn('telnet %s' % host)
 	#session1.logfile = sys.stdout
-	spawn_results  = session1.expect (["Unable to connect", "Username: ", "Password: ", pexpect.EOF, pexpect.TIMEOUT])
+	spawn_results  = session1.expect (["Unable to connect", "[uU]sername: ", "[pP]assword: ", pexpect.EOF, pexpect.TIMEOUT])
 	if spawn_results == 0:
 		print "!@#!@#!@#host down can not connect to host %s!@#!@#!@#" % targethosthost
 		return "host_down"

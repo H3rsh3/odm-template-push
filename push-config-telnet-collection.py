@@ -3,8 +3,14 @@ import time
 import sys
 import getpass
 import time
+import joblib
+import multiprocessing
 #
 #
+#
+#num_cores = multiprocessing.cpu_count()
+#
+#print num_cores
 #
 gusername = str(raw_input("enter username: "))
 #gpassword = str(raw_input("enter password: "))
@@ -28,21 +34,21 @@ with open('targethost.txt', 'r') as file:
     targethostfile_list = file.read().splitlines()
 #test="testfile"
 #
-def main_process(gusername, gpassword):
-	for targethosthost in targethostfile_list:
-		#targethosthost = targethosthost[:-1]
-		session1 = pexpect.spawn('telnet %s' % targethosthost)
-		if pexpect_authenticate_enable(gusername, gpassword, session1, targethosthost) == "priv_mode_access":
-			#print "match"
-			hostlogfile = open('log/{0}_{1}'.format(initdate, targethosthost), 'wb')
-			command_file = "command.txt"
-			session1.logfile_read = hostlogfile
-			targetcommandfile = open('{0}'.format(command_file), 'r')
-			targetcommandfile_list = targetcommandfile.readlines()
-			priv_config(session1,targetcommandfile_list)
-		else:
-			print "!@#!@#!@#login error!@#!@#!@#"
-		print "%s complete" % targethosthost
+def main_process(gusername, gpassword, targethosthost):
+#for targethosthost in targethostfile_list:
+	#targethosthost = targethosthost[:-1]
+	session1 = pexpect.spawn('telnet %s' % targethosthost)
+	if pexpect_authenticate_enable(gusername, gpassword, session1, targethosthost) == "priv_mode_access":
+		#print "match"
+		hostlogfile = open('log/{0}_{1}'.format(initdate, targethosthost), 'wb')
+		command_file = "command.txt"
+		session1.logfile_read = hostlogfile
+		targetcommandfile = open('{0}'.format(command_file), 'r')
+		targetcommandfile_list = targetcommandfile.readlines()
+		priv_config(session1,targetcommandfile_list)
+	else:
+		print "!@#!@#!@#login error!@#!@#!@#"
+	print "%s complete" % targethosthost
 #
 #
 #
@@ -146,7 +152,8 @@ def pextect_spawn(session1, targethosthost):
 #
 #
 def main():
-	main_process(gusername, gpassword)
+	#main_process(gusername, gpassword)
+	joblib.Parallel(n_jobs=6)(joblib.delayed(main_process)(gusername, gpassword,targethosthost) for targethosthost in targethostfile_list)
 #
 if __name__ == "__main__":
    main()

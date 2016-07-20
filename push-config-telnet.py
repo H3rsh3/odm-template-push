@@ -140,7 +140,8 @@ def pextect_spawn(session1, targethosthost):
 #
 #
 def main():
-	main_process(gusername, gpassword)
+	#main_process(gusername, gpassword)
+	joblib.Parallel(n_jobs=6)(joblib.delayed(main_process)(gusername, gpassword,targethosthost) for targethosthost in targethostfile_list)
 #
 if __name__ == "__main__":
    main()

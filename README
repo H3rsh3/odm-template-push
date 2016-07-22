@@ -1,4 +1,5 @@
 # push config 
-	push-config-ssh.py  for ssh
-	push-config-telnet.py  for telnet
-	push-config-telnet-colection.py collect configs
+	push-config-ssh.py  ---for ssh
+	push-config-telnet.py  ---for telnet
+	push-config-telnet-colection.py ---collect configs
+	push-config-telnet-col-js  ---collect config via jumpserver

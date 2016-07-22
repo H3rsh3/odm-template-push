@@ -8,7 +8,7 @@ import multiprocessing
 #
 #
 #
-num_cores = multiprocessing.cpu_count()
+max_par = int(raw_input("enter the number of max simultaneous connections: "))
 #
 #print num_cores
 #
@@ -171,7 +171,7 @@ def pextect_spawn(session1, targethosthost):
 #
 def main():
 	#main_process(gusername, gpassword)
-	joblib.Parallel(n_jobs=6)(joblib.delayed(main_process)(gusername, gpassword,targethosthost) for targethosthost in targethostfile_list)
+	joblib.Parallel(n_jobs=max_par)(joblib.delayed(main_process)(gusername, gpassword,targethosthost) for targethosthost in targethostfile_list)
 #
 if __name__ == "__main__":
    main()

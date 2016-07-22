@@ -36,7 +36,7 @@ with open('targethost.txt', 'r') as file:
 def main_process(gusername, gpassword):
 	for targethosthost in targethostfile_list:
 		#targethosthost = targethosthost[:-1]
-		session1 = pexpect.spawn('ssh {0}@{1}'.format(gusername,targethosthost))
+		session1 = pexpect.spawn('ssh -oStrictHostKeyChecking=no {0}@{1}'.format(gusername,targethosthost))
 		if pexpect_authenticate_enable(gusername, gpassword, session1, targethosthost) == "priv_mode_access":
 			#print "match"
 			hostlogfile = open('log/{0}_{1}'.format(initdate, targethosthost), 'wb')

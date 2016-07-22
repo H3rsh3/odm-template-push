@@ -17,7 +17,7 @@ gusername = str(raw_input("enter username: "))
 gpassword = getpass.getpass("enter password: ")
 #
 #initdate = (time.strftime("%Y%m%d_%H%M"))
-initdate = ""
+initdate = (time.strftime("%Y%m%d-%H_%M%S"))
 #
 #host_list = (["2.2.2.101", "2.2.2.102", "2.2.2.103", "2.2.2.104"])
 #command_list = (["term len 0", "show ip route", "show ip bgp", "show ip int brief", "show ver", "show proc cpu"])

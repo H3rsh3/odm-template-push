@@ -120,7 +120,7 @@ def pexpect_authenticate(gusername, gpassword, session1, targethosthost):
 	pextect_spawn_result = pextect_spawn(session1, targethosthost)
 	if pextect_spawn_result == "login_username":
 		session1.sendline("%s" % gusername)
-		session1.expect("Password: ")
+		session1.expect("[pP]assword: ")
 		session1.sendline("%s" % gpassword)
 		priv_results  = session1.expect (["#", ">", "Access denied", "failed"])
 		if priv_results == 0:

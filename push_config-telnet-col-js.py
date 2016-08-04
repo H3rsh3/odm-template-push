@@ -183,19 +183,19 @@ def pextect_spawn(session1, targethosthost):
 	#session1.logfile = sys.stdout
 	spawn_results  = session1.expect (["Unable to connect", "[uU]sername: ", "[pP]assword: ", "not responding", " Bad IP", " refused", pexpect.EOF, pexpect.TIMEOUT])
 	if spawn_results == 0:
-		print "!@#!@#!@#host down can not connect to host %s!@#!@#!@#" % targethosthost
+		print "!@#!@#!@#host down can not connect to host {0}!@#!@#!@#".format(targethosthost)
 		return "host_down"
 	elif spawn_results == 1:
-		print "###starting %s###" % targethosthost
+		print "###starting {0}###".format(targethosthost)
 		return "login_username"
 	elif spawn_results == 2:
-		print "###starting %s###" % targethosthost
+		print "###starting {0}###".format(targethosthost)
 		return "login_password"
 	elif spawn_results == 3 or spawn_results == 4 or spawn_results == 5:
-		print "!@#!@#!@#authentication or login error %s!@#!@#!@#" % targethosthost
+		print "!@#!@#!@#authentication or login error {0}!@#!@#!@#".format(targethosthost)
 		return "login_error"
 	else:
-		print "!@#!@#!@#authentication or login error %s!@#!@#!@#" % targethosthost
+		print "!@#!@#!@#authentication or login error {0}!@#!@#!@#".format(targethosthost)
 		return "login_error"
 #
 #

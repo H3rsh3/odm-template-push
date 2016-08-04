@@ -5,10 +5,14 @@ import getpass
 import time
 import joblib
 import multiprocessing
+import getpass
+from optparse import OptionParser
+import subprocess
 #
 #
 #
 max_par = int(raw_input("enter the number of max simultaneous connections: "))
+#
 #
 #
 gusername = ''
@@ -43,66 +47,59 @@ while True:
 		gpassword_val = getpass.getpass("enter password again: ")
 	else:
 		break
-#print (gusername)
-#print (gpassword)
-#
+#initdate = ""
 initdate = (time.strftime("%Y%m%d-%H_%M%S"))
 #
-#host_list = (["2.2.2.101", "2.2.2.102", "2.2.2.103", "2.2.2.104"])
-#command_list = (["term len 0", "show ip route", "show ip bgp", "show ip int brief", "show ver", "show proc cpu"])
-#
-#session1 = pexpect.spawn('telnet 2.2.2.104')
 #
 #
-#targetcommandfile = open('command.txt', 'r')
-#targetcommandfile_list = targetcommandfile.readlines()
+#if opt.ccmdfile != "-":
+#	with open('targethost.txt', 'r') as file:
+#		targethostfile_list = file.read().splitlines()
+#elif opt.ccmddir != "-":
+#	file = subprocess.check_output(['ls', '{0}'.format(opt.ccmddir)]).decode('ascii')
+#	targethostfile_list = file.split()
 #
-#targethostfile = open(r'targethost.txt', 'r')
-#targethostfile = open('targethost.txt', 'r').read().splitlines()
-#targethostfile_list = targethostfile
 #
-with open('targethost.txt', 'r') as file:
-    targethostfile_list = file.read().splitlines()
-#test="testfile"
 #
-def main_process(gusername, gpassword):
-	for targethosthost in targethostfile_list:
-		#targethosthost = targethosthost[:-1]
-		session1 = pexpect.spawn('ssh -oStrictHostKeyChecking=no {0}@{1}'.format(gusername,targethosthost))
-		if pexpect_authenticate_enable(gusername, gpassword, session1, targethosthost) == "priv_mode_access":
-			#print "match"
-			hostlogfile = open('log/{0}_{1}'.format(initdate, targethosthost), 'wb')
-			session1.logfile_read = hostlogfile
-			targetcommandfile = open('config_output/{0}'.format(targethosthost), 'r')
-			targetcommandfile_list = targetcommandfile.readlines()
-			priv_config(session1,targetcommandfile_list)
-		else:
-			print "login error_global"
-		print "%s complete" % targethosthost
+def main_process(gusername, gpassword, targethosthost):
+	if opt.utelnet:
+		session1 = pexpect.spawn('telnet %s' % targethosthost)
+	elif opt.ussh:
+		session1 = pexpect.spawn('ssh -oStrictHostKeyChecking=no {0}@{1}'.format(gusername,targethosthost))	
+	else: 
+		print("please specifiy -s or -t for ssh or telnet")
+	if pexpect_authenticate_enable(gusername, gpassword, session1, targethosthost) == "priv_mode_access":
+		hostlogfile = open('log/{0}_{1}'.format(initdate, targethosthost), 'wb')
+		if opt.ccmdfile != "-":
+			command_file = str(opt.ccmdfile)
+		elif opt.ccmddir != "-":
+			command_file = str(str(opt.ccmddir) + '/' + targethosthost)
+			#print(command_file)
+		session1.logfile_read = hostlogfile
+		targetcommandfile = open('{0}'.format(command_file), 'r')
+		#targetcommandfile = open('config_output/{0}'.format(targethosthost), 'r')
+		targetcommandfile_list = targetcommandfile.readlines()
+		priv_config(session1,targetcommandfile_list)
+		#targetcommandfile.close
+	else:
+		print("!@#!@#!@#login error_{0}_!@#!@#!@#".format(targethosthost))
+	print("_{0}_complete".format(targethosthost))
 #
 #
 #
 def priv_config(session1,targetcommandfile_list):
 	session1.sendline("term len 0")
 	for command in targetcommandfile_list:
-		print "{0}".format(command)
+		print("{0}".format(command))
 		session1.sendline("%s" % command)
-		#session1.wait()
-		session1.expect("#")
-		#config_results  = session1.expect (["#" , "]?"])
-		#if config_results == 0:
-		#	session1.sendline("%s" % command)
-		#elif config_results == 1:
-		#	session1.sendline("")
+		session1.expect("#", timeout=120)
 		continue
 	session1.expect("#")
-	#session1.sendline("you are here")
 	session1.sendline("end")
 	session1.expect("#")
 	session1.sendline("exit")
 	session1.expect(pexpect.EOF)
 	session1.close()
-	
 #
 #
 #
@@ -114,11 +111,9 @@ def pexpect_authenticate_enable(gusername, gpassword, session1, targethosthost):
 		session1.sendline("enable")
 		priv_pass_results = session1.expect(["error", "[pP]assword: "])
 		if priv_pass_results == 0:
-			print "!@#!@#!@#enable password missing!@#!@#!@#"
+			print ("!@#!@#!@#enable password missing_{0}_!@#!@#!@#".format(targethosthost))
 		elif priv_pass_results == 1: 
 			session1.sendline("{0}".format(gpassword))
-		#session1.expect("Password: ")
-		#session1.sendline("%s" % gpassword)
 			priv_authen_results  = session1.expect (["#" , "Access denied"])
 			if priv_authen_results == 0:
 				return "priv_mode_access"
@@ -127,7 +122,7 @@ def pexpect_authenticate_enable(gusername, gpassword, session1, targethosthost):
 			else:
 				return "priv_mode_error"
 	elif pexpect_authenticate_result == "enable_authen_err":
-		print "authen"
+		print ("enalbe authentication failure_{0}_".format(targethosthost))
 #
 #
 #
@@ -137,13 +132,15 @@ def pexpect_authenticate(gusername, gpassword, session1, targethosthost):
 		session1.sendline("%s" % gusername)
 		session1.expect("[pP]assword: ")
 		session1.sendline("%s" % gpassword)
-		priv_results  = session1.expect (["#", ">", "Access denied"])
+		priv_results  = session1.expect (["#", ">", "Access denied", "failed"])
 		if priv_results == 0:
 			return "enable_mode"
 		elif priv_results == 1:
 			return "enable_run_authen"
 		elif priv_results == 2:
 			return 'enable_authen_err'
+		elif priv_results == 3: 
+			print("!@#!@#!@#authentication error_{0}_!@#!@#!@#".format(targethosthost))
 		print "authen_comp_user"
 	elif pextect_spawn_result == "login_password":
 		session1.sendline("%s" % gpassword)
@@ -154,14 +151,14 @@ def pexpect_authenticate(gusername, gpassword, session1, targethosthost):
 			return "enable_run_authen"
 		elif priv_results == 2:
 			return 'enable_authen_error'
+		else:
+			print("!@#!@#!@#authentication error_{0}_!@#!@#!@#".format(targethosthost))
 		print "authen_comp_pass"
 #
 #
 #
 def pextect_spawn(session1, targethosthost):
-	#session1 = pexpect.spawn('telnet %s' % host)
-	#session1.logfile = sys.stdout
-	spawn_results  = session1.expect (["Unable to connect", "[uU]sername: ", "[pP]assword: ", pexpect.EOF, pexpect.TIMEOUT])
+	spawn_results  = session1.expect (["Unable to connect", "[uU]sername: ", "[pP]assword: ", "not responding", " Bad IP", " refused", pexpect.EOF, pexpect.TIMEOUT])
 	if spawn_results == 0:
 		print "!@#!@#!@#host down can not connect to host {0}!@#!@#!@#".format(targethosthost)
 		return "host_down"
@@ -170,8 +167,10 @@ def pextect_spawn(session1, targethosthost):
 		return "login_username"
 	elif spawn_results == 2:
 		print "###starting {0}###".format(targethosthost)
-		#print "login_password"
 		return "login_password"
+	elif spawn_results == 3 or spawn_results == 4 or spawn_results == 5:
+		print "!@#!@#!@#authentication or login error {0}!@#!@#!@#".format(targethosthost)
+		return "login_error"
 	else:
 		print "!@#!@#!@#authentication or login error {0}!@#!@#!@#".format(targethosthost)
 		return "login_error"
@@ -179,9 +178,29 @@ def pextect_spawn(session1, targethosthost):
 #
 #
 def main():
-	#main_process(gusername, gpassword)
 	joblib.Parallel(n_jobs=max_par)(joblib.delayed(main_process)(gusername, gpassword,targethosthost) for targethosthost in targethostfile_list)
 #
-if __name__ == "__main__":
-   main()
 #
+#
+if __name__ == "__main__":
+	pars = OptionParser()
+	pars.add_option("-s", "--usessh",help="connect using ssh", action="store_true", dest="ussh", default=False)
+	pars.add_option("-t", "--usetelnet",help="connect using telnet", action="store_true", dest="utelnet", default=False)
+	pars.add_option("-c", "--ccmdfile",help="send command from a specific file", dest="ccmdfile", default='-')
+	pars.add_option("-d", "--ccmddir",help="send command from a specific dir", dest="ccmddir", default='-')
+	opt, args = pars.parse_args()
+	if opt.ccmdfile != "-":
+		with open('targethost.txt', 'r') as file:
+			targethostfile_list = file.read().splitlines()
+	elif opt.ccmddir != "-":
+		file = subprocess.check_output(['ls', '{0}'.format(opt.ccmddir)]).decode('ascii')
+		targethostfile_list = file.split()
+	main()
+#
+#
+#####use telnet and use a static command file
+# 			python push-config-telnet-collection.py -t -c command.txt
+#####use telnet and use a dynamic config file
+# 			python push-config-telnet-collection.py -t -d cmd_dir
+#####use ssh and use a dynamic config file
+#			python push-config-telnet-collection.py -s -d cmd_dir

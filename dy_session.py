@@ -198,7 +198,7 @@ def pextect_spawn(session1, targethosthost):
 		return "login_error"	
 	else:
 		#print ("!@#!@#!@#authentication or login error {0}!@#!@#!@#".format(targethosthost))
-		host_authen_err = True
+		host_con_err = True
 		return "login_error"
 #
 #

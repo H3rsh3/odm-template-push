@@ -93,7 +93,9 @@ def priv_config(session1,targetcommandfile_list):
 		print("{0}".format(command))
 		session1.sendline("%s" % command)
 		session1.expect("#", timeout=120)
-		continue
+		session1.sendline("")
+		session1.expect("#", timeout=120)
+		#continue
 	session1.expect("#")
 	session1.sendline("end")
 	session1.expect("#")

@@ -5,6 +5,7 @@ import getpass
 import time
 import joblib
 import multiprocessing
+import getpass
 #
 #
 #
@@ -14,10 +15,40 @@ max_par = int(raw_input("enter the number of max simultaneous connections: "))
 #
 ios_js = "R1"
 #
-gusername = str(raw_input("enter username: "))
-#gpassword = str(raw_input("enter password: "))
+gusername = ''
+gpassword = ''
+gusername = raw_input("enter username: ")
+while True:
+	if gusername == '':
+		try:
+			print("Warning!!, username is not valid, try again")
+			gusername = raw_input("enter username: ")
+		except Exception as e:
+			raise
+		else:	
+			print("username is {0}".format(gusername))
+		#finally:
+		#	print("done with username")
+	else:
+		break
+#self.gusername = gusername
+# set up password
 gpassword = getpass.getpass("enter password: ")
-#
+gpassword_val = getpass.getpass("enter password again: ")
+while True:
+	if gpassword == '':
+		print("Password can not be empty")
+		gpassword = getpass.getpass("enter password: ")
+		gpassword_val = getpass.getpass("enter password again: ")
+		continue
+	elif gpassword != gpassword_val:
+		print("Warning!!, Passwords do not match, retry")
+		gpassword = getpass.getpass("enter password: ")
+		gpassword_val = getpass.getpass("enter password again: ")
+	else:
+		break
+#print (gusername)
+#print (gpassword)
 #initdate = (time.strftime("%Y%m%d_%H%M"))
 initdate = (time.strftime("%Y%m%d-%H_%M%S"))
 #
@@ -97,7 +128,7 @@ def pexpect_authenticate_enable(gusername, gpassword, session1, targethosthost):
 		return "priv_mode_access"
 	elif pexpect_authenticate_result == "enable_run_authen":
 		session1.sendline("enable")
-		priv_pass_results = session1.expect(["error", "Password: "])
+		priv_pass_results = session1.expect(["error", "[pP]assword: "])
 		if priv_pass_results == 0:
 			print "!@#!@#!@#enable password missing!@#!@#!@#"
 		elif priv_pass_results == 1: 

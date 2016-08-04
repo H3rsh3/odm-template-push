@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import pexpect
 import time
 import sys
@@ -60,8 +61,14 @@ initdate = (time.strftime("%Y%m%d-%H_%M%S"))
 #	targethostfile_list = file.split()
 #
 #
+green_cl = '\033[92m'
+red_cl = '\033[91m'
+yel_cl = '\033[93m'
+blk_cl = '\033[0m'
 #
 def main_process(gusername, gpassword, targethosthost):
+	host_authen_err = False
+	host_login_err = False
 	if opt.utelnet:
 		session1 = pexpect.spawn('telnet %s' % targethosthost)
 	elif opt.ussh:
@@ -82,15 +89,24 @@ def main_process(gusername, gpassword, targethosthost):
 		priv_config(session1,targetcommandfile_list)
 		#targetcommandfile.close
 	else:
-		print("!@#!@#!@#login error_{0}_!@#!@#!@#".format(targethosthost))
-	print("_{0}_complete".format(targethosthost))
+		host_authen_err = True
+		#print("!@#!@#!@#login error_{0}_!@#!@#!@#".format(targethosthost))
+	#
+	if host_login_err:
+		print(red_cl + "{0}-:------------------------------------login error".format(targethosthost) + blk_cl)
+	elif host_authen_err:
+		print(yel_cl + "{0}-:------------------------------------authentication error".format(targethosthost) + blk_cl)
+	else:
+		print(green_cl + "{0}-:------------------------------------complete".format(targethosthost) + blk_cl)	
+
+	
 #
 #
 #
 def priv_config(session1,targetcommandfile_list):
 	session1.sendline("term len 0")
 	for command in targetcommandfile_list:
-		print("{0}".format(command))
+		#print("{0}".format(command))
 		session1.sendline("%s" % command)
 		session1.expect("#", timeout=120)
 		session1.sendline("")
@@ -113,8 +129,9 @@ def pexpect_authenticate_enable(gusername, gpassword, session1, targethosthost):
 		session1.sendline("enable")
 		priv_pass_results = session1.expect(["error", "[pP]assword: "])
 		if priv_pass_results == 0:
-			print ("!@#!@#!@#enable password missing_{0}_!@#!@#!@#".format(targethosthost))
-		elif priv_pass_results == 1: 
+			#print ("!@#!@#!@#enable password missing_{0}_!@#!@#!@#".format(targethosthost))
+			host_authen_err = True
+		elif priv_pass_results == 1:
 			session1.sendline("{0}".format(gpassword))
 			priv_authen_results  = session1.expect (["#" , "Access denied"])
 			if priv_authen_results == 0:
@@ -124,7 +141,8 @@ def pexpect_authenticate_enable(gusername, gpassword, session1, targethosthost):
 			else:
 				return "priv_mode_error"
 	elif pexpect_authenticate_result == "enable_authen_err":
-		print ("enalbe authentication failure_{0}_".format(targethosthost))
+		#print ("enalbe authentication failure_{0}_".format(targethosthost))
+		host_authen_err = True
 #
 #
 #
@@ -142,8 +160,9 @@ def pexpect_authenticate(gusername, gpassword, session1, targethosthost):
 		elif priv_results == 2:
 			return 'enable_authen_err'
 		elif priv_results == 3: 
-			print("!@#!@#!@#authentication error_{0}_!@#!@#!@#".format(targethosthost))
-		print "authen_comp_user"
+			#print("!@#!@#!@#authentication error_{0}_!@#!@#!@#".format(targethosthost))
+			host_authen_err = True
+		#print "authen_comp_user"
 	elif pextect_spawn_result == "login_password":
 		session1.sendline("%s" % gpassword)
 		priv_results  = session1.expect (["#", ">", "Access denied"])
@@ -154,7 +173,8 @@ def pexpect_authenticate(gusername, gpassword, session1, targethosthost):
 		elif priv_results == 2:
 			return 'enable_authen_error'
 		else:
-			print("!@#!@#!@#authentication error_{0}_!@#!@#!@#".format(targethosthost))
+			#print("!@#!@#!@#authentication error_{0}_!@#!@#!@#".format(targethosthost))
+			host_authen_err = True
 		print "authen_comp_pass"
 #
 #
@@ -162,19 +182,22 @@ def pexpect_authenticate(gusername, gpassword, session1, targethosthost):
 def pextect_spawn(session1, targethosthost):
 	spawn_results  = session1.expect (["Unable to connect", "[uU]sername: ", "[pP]assword: ", "not responding", " Bad IP", " refused", pexpect.EOF, pexpect.TIMEOUT])
 	if spawn_results == 0:
-		print "!@#!@#!@#host down can not connect to host {0}!@#!@#!@#".format(targethosthost)
+		#print ("!@#!@#!@#host down can not connect to host {0}!@#!@#!@#".format(targethosthost))
+		host_login_err = False
 		return "host_down"
 	elif spawn_results == 1:
-		print "###starting {0}###".format(targethosthost)
+		#print ("###starting {0}###".format(targethosthost))
 		return "login_username"
 	elif spawn_results == 2:
-		print "###starting {0}###".format(targethosthost)
+		#print ("###starting {0}###".format(targethosthost))
 		return "login_password"
 	elif spawn_results == 3 or spawn_results == 4 or spawn_results == 5:
-		print "!@#!@#!@#authentication or login error {0}!@#!@#!@#".format(targethosthost)
+		host_authen_err = True
+		#print ("!@#!@#!@#authentication or login error {0}!@#!@#!@#".format(targethosthost))
 		return "login_error"
 	else:
-		print "!@#!@#!@#authentication or login error {0}!@#!@#!@#".format(targethosthost)
+		#print ("!@#!@#!@#authentication or login error {0}!@#!@#!@#".format(targethosthost))
+		host_authen_err = True
 		return "login_error"
 #
 #

@@ -152,10 +152,10 @@ def pexpect_authenticate(gusername, gpassword, session1, targethosthost):
 		session1.sendline("%s" % gusername)
 		session1.expect("[pP]assword: ")
 		session1.sendline("%s" % gpassword)
-		priv_results  = session1.expect (["#", "\r\n\w+>", "Access denied", "failed"])
+		priv_results  = session1.expect (["#", "\r\n\w+>", "Access denied", "failed", "\r\n(\w|-)+>"])
 		if priv_results == 0:
 			return "enable_mode"
-		elif priv_results == 1:
+		elif priv_results == 1 or priv_results == 4:
 			return "enable_run_authen"
 		elif priv_results == 2:
 			return 'enable_authen_err'

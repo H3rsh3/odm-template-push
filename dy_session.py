@@ -68,7 +68,7 @@ blk_cl = '\033[0m'
 #
 def main_process(gusername, gpassword, targethosthost):
 	host_authen_err = False
-	host_con_err = False
+	main_process.host_con_err = False
 	if opt.utelnet:
 		session1 = pexpect.spawn('telnet %s' % targethosthost)
 	elif opt.ussh:
@@ -92,7 +92,7 @@ def main_process(gusername, gpassword, targethosthost):
 		host_authen_err = True
 		#print("!@#!@#!@#login error_{0}_!@#!@#!@#".format(targethosthost))
 	#
-	if host_con_err:
+	if main_process.host_con_err:
 		print(red_cl + "{0}-:------------------------------------login error".format(targethosthost) + blk_cl)
 	elif host_authen_err:
 		print(yel_cl + "{0}-:------------------------------------authentication error".format(targethosthost) + blk_cl)
@@ -183,7 +183,7 @@ def pextect_spawn(session1, targethosthost):
 	spawn_results  = session1.expect (["Unable to connect", "[uU]sername: ", "[pP]assword: ", "not responding", " Bad IP", " refused", pexpect.EOF, pexpect.TIMEOUT])
 	if spawn_results == 0:
 		#print ("!@#!@#!@#host down can not connect to host {0}!@#!@#!@#".format(targethosthost))
-		host_con_err = False
+		main_process.host_con_err = False
 		return "host_down"
 	elif spawn_results == 1:
 		#print ("###starting {0}###".format(targethosthost))
@@ -194,11 +194,11 @@ def pextect_spawn(session1, targethosthost):
 	elif spawn_results == 3 or spawn_results == 4 or spawn_results == 5:
 		host_authen_err = True
 		#print ("!@#!@#!@#authentication or login error {0}!@#!@#!@#".format(targethosthost))
-		host_con_err = False
+		main_process.host_con_err = False
 		return "login_error"	
 	else:
 		#print ("!@#!@#!@#authentication or login error {0}!@#!@#!@#".format(targethosthost))
-		host_con_err = True
+		main_process.host_con_err = True
 		return "login_error"
 #
 #

@@ -1,4 +1,4 @@
-# push config 
+# push config, use dy_session.py(file)
 	-s use ssh
 	-t use telnet
 	-c <filename> name if the file from which commands will be sent
@@ -9,14 +9,26 @@
 
 
 #####use telnet and use a static command file
-# 			python push-config-telnet-collection.py -t -c command.txt
+# 			python dy_session.py -t -c command.txt -i targethost.txt
 #####use telnet and use a static command file, and output log co custom dir
-# 			python push-config-telnet-collection.py -t -c command.txt -l logoutput
+# 			python dy_session.py -t -c command.txt -l logoutput -i targethost.txt
 #####use telnet and use a dynamic config file
-# 			python push-config-telnet-collection.py -t -d cmd_dir
+# 			python dy_session.py -t -d cmd_dir
 #####use telnet and use a dynamic config file and use custom log dir, the dir must be crated 
-# 			python push-config-telnet-collection.py -t -d cmd_dir -l logoutput
+# 			python dy_session.py -t -d cmd_dir -l logoutput
 #####use ssh and use a dynamic config file
-#			python push-config-telnet-collection.py -s -d cmd_dir
+#			python dy_session.py -s -d cmd_dir
 #####use telnet and a static command file and specify the log outputdir and the hostfile
-#./dy_session.py -t -c command.txt -l testoutputs -i targethost1
+#./dy_session.py -t -c command.txt -l testoutputs -i targethost.txt
+
+flow 
+	use static commands file?
+		use -c to specify the file that contains the commands, and use -i to specify who to push the commands out to(host)
+			want to use telnet use -t and -s for ssh
+				want to log the session to specific dir? by default it dir "log"
+					#example "python dy_session.py -t -c command.txt -i targethost.txt -l logouputs"
+	use different commands for each host?
+		use -d to speficy the dir where the commands are contained, the hosts will be the file name, so if the file name is (Router1) the host it will try to telnet to is Router1. dont use any extentions
+			want to use telnet use -t and -s for ssh
+				by default it dir "log"
+					#example "python dy_session.py -t -d config_data"

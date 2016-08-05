@@ -1,5 +1,7 @@
 # push config 
-	push-config-ssh.py  ---for ssh
-	push-config-telnet.py  ---for telnet
-	push-config-telnet-colection.py ---collect configs
-	push-config-telnet-col-js  ---collect config via jumpserver
+	-s use ssh
+	-t use telnet
+	-c <filename> name if the file from which commands will be sent
+	-d <dir> name of the dir from where the commands will be send.note the name of the file must match the hostname. one file for each host
+	-l <dir> by default is "log/" this is were the ouput of the seession will be stored, this dir need to be created manually
+	-i <file> name of the file for the hosts, which will be used if -d id not used

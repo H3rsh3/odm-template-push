@@ -93,7 +93,7 @@ def main_process(gusername, gpassword, targethosthost):
 		#print("!@#!@#!@#login error_{0}_!@#!@#!@#".format(targethosthost))
 	#
 	if main_process.host_con_err:
-		print(red_cl + "{0}-:------------------------------------login error".format(targethosthost) + blk_cl)
+		print(red_cl + "{0}-:------------------------------------connection error".format(targethosthost) + blk_cl)
 	elif host_authen_err:
 		print(yel_cl + "{0}-:------------------------------------authentication error".format(targethosthost) + blk_cl)
 	else:
@@ -108,9 +108,9 @@ def priv_config(session1,targetcommandfile_list):
 	for command in targetcommandfile_list:
 		#print("{0}".format(command))
 		session1.sendline("%s" % command)
-		session1.expect("#", timeout=120)
+		session1.expect("#", timeout=240)
 		session1.sendline("")
-		session1.expect("#", timeout=120)
+		session1.expect("#", timeout=240)
 		#continue
 	session1.expect("#")
 	session1.sendline("end")
@@ -215,9 +215,12 @@ if __name__ == "__main__":
 	pars.add_option("-c", "--ccmdfile",help="send command from a specific file", dest="ccmdfile", default='-')
 	pars.add_option("-d", "--ccmddir",help="send command from a specific dir", dest="ccmddir", default='-')
 	pars.add_option("-l", "--ologfile",help="send log to dir", dest="ologdir", default='log')
+	pars.add_option("-i", "--hostfile",help="ihostfile", dest="ihostfile", default='-')
 	opt, args = pars.parse_args()
+	mkdir_ov = subprocess.Popen(["mkdir", "{0}".format(opt.ologdir)])
+	mkdir_ovw = mkdir_ov.communicate()[0]
 	if opt.ccmdfile != "-":
-		with open('targethost.txt', 'r') as file:
+		with open('{0}'.format(opt.ihostfile), 'r') as file:
 			targethostfile_list = file.read().splitlines()
 	elif opt.ccmddir != "-":
 		file = subprocess.check_output(['ls', '{0}'.format(opt.ccmddir)]).decode('ascii')

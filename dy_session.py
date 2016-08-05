@@ -76,7 +76,7 @@ def main_process(gusername, gpassword, targethosthost):
 	else: 
 		print("please specifiy -s or -t for ssh or telnet")
 	if pexpect_authenticate_enable(gusername, gpassword, session1, targethosthost) == "priv_mode_access":
-		hostlogfile = open('log/{0}_{1}'.format(initdate, targethosthost), 'wb')
+		hostlogfile = open('{0}/{1}{2}'.format(opt.ologdir, initdate, targethosthost), 'wb')
 		if opt.ccmdfile != "-":
 			command_file = str(opt.ccmdfile)
 		elif opt.ccmddir != "-":
@@ -183,7 +183,7 @@ def pextect_spawn(session1, targethosthost):
 	spawn_results  = session1.expect (["Unable to connect", "[uU]sername: ", "[pP]assword: ", "not responding", " Bad IP", " refused", pexpect.EOF, pexpect.TIMEOUT])
 	if spawn_results == 0:
 		#print ("!@#!@#!@#host down can not connect to host {0}!@#!@#!@#".format(targethosthost))
-		main_process.host_con_err = False
+		main_process.host_con_err = True
 		return "host_down"
 	elif spawn_results == 1:
 		#print ("###starting {0}###".format(targethosthost))
@@ -194,7 +194,7 @@ def pextect_spawn(session1, targethosthost):
 	elif spawn_results == 3 or spawn_results == 4 or spawn_results == 5:
 		host_authen_err = True
 		#print ("!@#!@#!@#authentication or login error {0}!@#!@#!@#".format(targethosthost))
-		main_process.host_con_err = False
+		main_process.host_con_err = True
 		return "login_error"	
 	else:
 		#print ("!@#!@#!@#authentication or login error {0}!@#!@#!@#".format(targethosthost))
@@ -214,6 +214,7 @@ if __name__ == "__main__":
 	pars.add_option("-t", "--usetelnet",help="connect using telnet", action="store_true", dest="utelnet", default=False)
 	pars.add_option("-c", "--ccmdfile",help="send command from a specific file", dest="ccmdfile", default='-')
 	pars.add_option("-d", "--ccmddir",help="send command from a specific dir", dest="ccmddir", default='-')
+	pars.add_option("-l", "--ologfile",help="send log to dir", dest="ologdir", default='log')
 	opt, args = pars.parse_args()
 	if opt.ccmdfile != "-":
 		with open('targethost.txt', 'r') as file:
@@ -226,7 +227,11 @@ if __name__ == "__main__":
 #
 #####use telnet and use a static command file
 # 			python push-config-telnet-collection.py -t -c command.txt
+#####use telnet and use a static command file, and output log co custom dir
+# 			python push-config-telnet-collection.py -t -c command.txt -l logoutput
 #####use telnet and use a dynamic config file
 # 			python push-config-telnet-collection.py -t -d cmd_dir
+#####use telnet and use a dynamic config file and use custom log dir, the dir must be crated 
+# 			python push-config-telnet-collection.py -t -d cmd_dir -l logoutput
 #####use ssh and use a dynamic config file
 #			python push-config-telnet-collection.py -s -d cmd_dir

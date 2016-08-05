@@ -238,3 +238,5 @@ if __name__ == "__main__":
 # 			python push-config-telnet-collection.py -t -d cmd_dir -l logoutput
 #####use ssh and use a dynamic config file
 #			python push-config-telnet-collection.py -s -d cmd_dir
+#####use telnet and a static command file and specify the log outputdir and the hostfile
+#./dy_session.py -t -c command.txt -l testoutputs -i targethost1

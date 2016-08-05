@@ -5,3 +5,18 @@
 	-d <dir> name of the dir from where the commands will be send.note the name of the file must match the hostname. one file for each host
 	-l <dir> by default is "log/" this is were the ouput of the seession will be stored, this dir need to be created manually
 	-i <file> name of the file for the hosts, which will be used if -d id not used
+
+
+
+#####use telnet and use a static command file
+# 			python push-config-telnet-collection.py -t -c command.txt
+#####use telnet and use a static command file, and output log co custom dir
+# 			python push-config-telnet-collection.py -t -c command.txt -l logoutput
+#####use telnet and use a dynamic config file
+# 			python push-config-telnet-collection.py -t -d cmd_dir
+#####use telnet and use a dynamic config file and use custom log dir, the dir must be crated 
+# 			python push-config-telnet-collection.py -t -d cmd_dir -l logoutput
+#####use ssh and use a dynamic config file
+#			python push-config-telnet-collection.py -s -d cmd_dir
+#####use telnet and a static command file and specify the log outputdir and the hostfile
+#./dy_session.py -t -c command.txt -l testoutputs -i targethost1
